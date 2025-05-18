@@ -1,0 +1,24 @@
+// Файл: main.scss
+// Назначение:
+//   Точка входа SCSS: подключает Bootstrap и другие partials,
+//   содержит глобальные переопределения стилей.
+
+
+// 1) Подключаем свои переменные и миксины под префиксом
+@use 'variables' as vars;
+@use 'mixins' as mix;
+
+// 2) Подключаем Bootstrap под префиксом bs
+@use 'bootstrap/scss/bootstrap' as bs;
+
+// 3) Указываем, откуда берём переменные и миксины
+body {
+	font-family: vars.$font-family-base;
+}
+.object-fit-cover {
+	object-fit: cover;
+}
+
+.navbar-custom {
+	@include mix.card-shadow;
+}

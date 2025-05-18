@@ -1,0 +1,7 @@
+// Файл: _mixins.scss
+// Назначение:
+//   Миксины (box-shadow, border-radius и т.д.) для переиспользования.
+
+@mixin card-shadow {
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}

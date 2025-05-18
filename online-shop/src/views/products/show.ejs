@@ -1,0 +1,142 @@
+<%#
+  Файл: src/views/products/show.ejs
+  Назначение:
+    Подробная страница товара: изображение, описание, цена, форма добавления,
+    комментарии и рейтинг.
+%>
+
+<div class="row gy-4">
+  <!-- Изображение товара -->
+  <% if (product.image) { %>
+    <div class="col-md-5">
+      <div class="card shadow-sm">
+        <img 
+          src="<%= product.image.startsWith('http') ? product.image : '/uploads/' + product.image %>" 
+          class="card-img-top object-fit-cover" 
+          alt="<%= product.name %>" 
+          style="height: 100%; aspect-ratio: 4/3;"
+        >
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Информация и покупка -->
+  <div class="<%= product.image ? 'col-md-7' : 'col-12' %>">
+    <h2 class="mb-3"><%= product.name %></h2>
+    <p class="text-muted mb-4"><%= product.shortDesc %></p>
+    <div class="mb-4">
+      <span class="h4 text-success"><%= product.price %> ₽</span>
+      <% if (product.stock > 0) { %>
+        <span class="badge bg-success ms-2">В наличии</span>
+      <% } else { %>
+        <span class="badge bg-danger ms-2">Нет в наличии</span>
+      <% } %>
+    </div>
+    <p class="mb-4"><%= product.fullDesc %></p>
+
+    <form action="/cart/add" method="post" class="row g-2 align-items-end mb-5">
+      <input type="hidden" name="productId" value="<%= product.id %>">
+      <div class="col-auto">
+        <label for="qty" class="form-label">Количество</label>
+        <input 
+          type="number" 
+          id="qty" 
+          name="qty" 
+          value="1" 
+          min="1" 
+          max="<%= product.stock %>" 
+          class="form-control" 
+          style="width: 90px;"
+          <%= product.stock === 0 ? 'disabled' : '' %>
+        >
+      </div>
+      <div class="col-auto">
+        <button 
+          type="submit" 
+          class="btn btn-success px-4" 
+          <%= product.stock === 0 ? 'disabled' : '' %>
+        >
+          В корзину
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<hr>
+
+<!-- Блок комментариев -->
+<div class="row gy-4">
+  <div class="col-12 col-lg-6">
+    <h3 class="mb-3">Комментарии</h3>
+    <% if (product.Comments && product.Comments.length) { %>
+      <ul class="list-group mb-4">
+        <% product.Comments.forEach(c => { %>
+          <li class="list-group-item">
+            <strong><%= c.User.name %></strong>
+            <small class="text-muted ms-2"><%= new Date(c.createdAt).toLocaleString() %></small>
+            <p class="mt-2 mb-0"><%= c.text %></p>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="text-muted mb-4">Комментариев пока нет.</p>
+    <% } %>
+
+    <!-- Форма добавления комментария -->
+    <form action="/products/<%= product.id %>/comments" method="post">
+      <div class="mb-3">
+        <label for="commentText" class="form-label">Оставить комментарий</label>
+        <textarea 
+          id="commentText" 
+          name="text" 
+          class="form-control" 
+          rows="3" 
+          placeholder="Ваш отзыв..." 
+          required
+        ></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+  </div>
+
+  <!-- Блок рейтинга -->
+  <div class="col-12 col-lg-6">
+    <h3 class="mb-3">Рейтинг товара</h3>
+    <% const avg = product.Ratings && product.Ratings.length
+         ? product.Ratings.reduce((s,r)=>s+r.rating,0)/product.Ratings.length
+         : 0;
+       const fullStars = Math.floor(avg);
+       const halfStar = avg - fullStars >= 0.5;
+    %>
+    <div class="mb-2">
+      <% for(let i=1;i<=5;i++){ %>
+        <% if (i <= fullStars) { %>
+          <i class="bi bi-star-fill text-warning"></i>
+        <% } else if (i === fullStars+1 && halfStar) { %>
+          <i class="bi bi-star-half text-warning"></i>
+        <% } else { %>
+          <i class="bi bi-star text-warning"></i>
+        <% } %>
+      <% } %>
+      <span class="ms-2"><%= avg ? avg.toFixed(1) : 'Нет оценок' %></span>
+    </div>
+
+    <!-- Форма оценки -->
+    <form action="/products/<%= product.id %>/rate" method="post">
+      <label class="form-label">Оценить товар</label>
+      <div class="d-flex mb-3" style="max-width: 200px;">
+        <select 
+          name="rating" 
+          class="form-select text-dark me-2" 
+          style="width: 80px;"
+        >
+          <% for(let i=1;i<=5;i++){ %>
+            <option value="<%= i %>"><%= i %>★</option>
+          <% } %>
+        </select>
+        <button class="btn btn-warning flex-shrink-0" type="submit">Оценить</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<%#
+  Файл: src/views/dashboard.ejs
+  Назначение:
+    Личный кабинет: блок профиля пользователя и таблица его заказов.
+%>
+
+<div class="row mb-5">
+	<!-- Блок профиля -->
+	<div class="col-md-4">
+		<div class="card shadow-sm">
+			<div class="card-header bg-primary text-white">
+				<h5 class="mb-0">Ваш профиль</h5>
+			</div>
+			<div class="card-body">
+				<p><strong>Имя: </strong> <%= user.name %></p>
+				<p><strong>Email: </strong> <%= user.email %></p>
+				<p>
+					<strong>Роль: </strong> <%= user.role === 'admin' ? 'Администратор' :
+					'Пользователь' %>
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Блок заказов -->
+	<div class="col-md-8">
+		<h4 class="mb-3">Ваши заказы</h4>
+
+		<% if (orders.length) { %>
+		<div class="table-responsive">
+			<table class="table table-hover align-middle">
+				<thead class="table-light">
+					<tr>
+						<th>ID</th>
+						<th>Статус</th>
+						<th>Дата</th>
+						<th>Товары</th>
+						<th>Сумма</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% orders.forEach(o => { const sum = o.OrderItems .reduce((a, i) => a
+					+ parseFloat(i.priceAtOrder) * i.quantity, 0) .toFixed(2); %>
+					<tr>
+						<td>#<%= o.id %></td>
+						<td>
+							<% let cls = 'secondary'; if (o.status==='new') cls='info'; if
+							(o.status==='in_process') cls='warning'; if
+							(o.status==='completed') cls='success'; if (o.status==='canceled')
+							cls='danger'; %>
+							<span class="badge bg-<%= cls %>">
+								<%= { new: 'Новый', in_process: 'В работе', completed:
+								'Завершён', canceled: 'Отклонён' }[o.status] %>
+							</span>
+						</td>
+						<td><%= o.createdAt.toLocaleString() %></td>
+						<td>
+							<ul class="mb-0">
+								<% o.OrderItems.forEach(i => { %>
+								<li><%= i.Product.name %> × <%= i.quantity %></li>
+								<% }) %>
+							</ul>
+						</td>
+						<td><strong><%= sum %> ₽</strong></td>
+					</tr>
+					<% }) %>
+				</tbody>
+			</table>
+		</div>
+		<% } else { %>
+		<div class="alert alert-light">У вас пока нет заказов.</div>
+		<% } %>
+	</div>
+</div>

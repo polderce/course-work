@@ -1,0 +1,95 @@
+<%#
+  Файл: src/views/register.ejs
+  Назначение:
+    Форма регистрации нового пользователя с валидацией и flash-ошибками.
+%>
+
+<div
+	class="d-flex justify-content-center align-items-center"
+	style="min-height: 60vh"
+>
+	<div class="card shadow-sm" style="width: 100%; max-width: 400px">
+		<div class="card-header text-center bg-primary text-white">
+			<h3 class="mb-0">Регистрация</h3>
+		</div>
+		<div class="card-body">
+			<!-- Ошибки Passport -->
+			<% if (errorMessages && errorMessages.length) { %>
+			<div class="alert alert-danger">
+				<% errorMessages.forEach(msg => { %>
+				<div><i class="bi bi-exclamation-circle-fill me-2"></i><%= msg %></div>
+				<% }) %>
+			</div>
+			<% } %>
+
+			<!-- Валидационные ошибки контроллера -->
+			<% if (errors && errors.length) { %>
+			<div class="alert alert-danger">
+				<% errors.forEach(e => { %>
+				<div><i class="bi bi-x-circle-fill me-2"></i><%= e.msg %></div>
+				<% }) %>
+			</div>
+			<% } %>
+
+			<form action="/register" method="post" novalidate>
+				<div class="mb-3">
+					<label for="name" class="form-label">Имя</label>
+					<input
+						type="text"
+						id="name"
+						name="name"
+						class="form-control"
+						value="<%= name||'' %>"
+						placeholder="Ваше имя"
+						required
+					/>
+				</div>
+				<div class="mb-3">
+					<label for="email" class="form-label">Электронная почта</label>
+					<input
+						type="email"
+						id="email"
+						name="email"
+						class="form-control"
+						value="<%= email||'' %>"
+						placeholder="example@mail.com"
+						required
+					/>
+				</div>
+				<div class="mb-3">
+					<label for="password" class="form-label">Пароль</label>
+					<input
+						type="password"
+						id="password"
+						name="password"
+						class="form-control"
+						placeholder="••••••••"
+						minlength="6"
+						required
+					/>
+				</div>
+				<div class="mb-4">
+					<label for="password2" class="form-label">Повторите пароль</label>
+					<input
+						type="password"
+						id="password2"
+						name="password2"
+						class="form-control"
+						placeholder="••••••••"
+						minlength="6"
+						required
+					/>
+				</div>
+				<button type="submit" class="btn btn-success w-100 mb-2">
+					Зарегистрироваться
+				</button>
+			</form>
+
+			<div class="text-center">
+				<small>
+					Уже есть аккаунт? <a href="/login" class="link-primary">Войти</a>
+				</small>
+			</div>
+		</div>
+	</div>
+</div>

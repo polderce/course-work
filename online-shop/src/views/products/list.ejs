@@ -1,0 +1,133 @@
+<%#
+  Файл: src/views/products/list.ejs
+  Назначение:
+    Отображение каталога товаров в виде сетки с фильтрами и сортировкой.
+%>
+
+<div class="row">
+  <!-- Фильтры сбоку -->
+  <aside class="col-lg-3 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Фильтры</h5>
+      </div>
+      <div class="card-body">
+        <form id="filterForm" method="get" action="/products">
+          <!-- Категория -->
+          <div class="mb-3">
+            <label for="categorySelect" class="form-label">Категория</label>
+            <select name="category" id="categorySelect" class="form-select">
+              <option value="">Все категории</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= filters.category==cat.id?'selected':'' %>>
+                  <%= cat.name %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+          <!-- Подкатегория -->
+          <div class="mb-3">
+            <label for="subcategorySelect" class="form-label">Подкатегория</label>
+            <select name="subcategory" id="subcategorySelect" class="form-select">
+              <option value="">Все</option>
+              <% categories.forEach(cat => {
+                   cat.Subcategories.forEach(sub => { %>
+                     <option 
+                       value="<%= sub.id %>" 
+                       data-category="<%= cat.id %>" 
+                       <%= filters.subcategory==sub.id?'selected':'' %>
+                     >
+                       <%= sub.name %>
+                     </option>
+              <% })}) %>
+            </select>
+          </div>
+          <!-- Сортировка -->
+          <div class="mb-3">
+            <label for="sortSelect" class="form-label">Сортировать по</label>
+            <select name="sort" id="sortSelect" class="form-select">
+              <option value="">По умолчанию</option>
+              <option value="price_asc"   <%= filters.sort=='price_asc'?'selected':'' %>>Цена ↑</option>
+              <option value="price_desc"  <%= filters.sort=='price_desc'?'selected':'' %>>Цена ↓</option>
+              <option value="name_asc"    <%= filters.sort=='name_asc'?'selected':'' %>>Название ↑</option>
+              <option value="name_desc"   <%= filters.sort=='name_desc'?'selected':'' %>>Название ↓</option>
+              <option value="availability"<%= filters.sort=='availability'?'selected':'' %>>Наличие</option>
+              <option value="rating_desc" <%= filters.sort=='rating_desc'?'selected':'' %>>Рейтинг ↓</option>
+              <option value="rating_asc"  <%= filters.sort=='rating_asc'?'selected':'' %>>Рейтинг ↑</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100">Применить</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Сама сетка товаров -->
+  <section class="col-lg-9">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+      <% products.forEach(p => { %>
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0">
+            <% if (p.image) { %>
+              <div class="ratio ratio-4x3 overflow-hidden">
+                <img 
+                  src="<%= p.image.startsWith('http') 
+                            ? p.image 
+                            : '/uploads/' + p.image %>" 
+                  class="card-img-top object-fit-cover" 
+                  alt="<%= p.name %>"
+                >
+              </div>
+            <% } else { %>
+              <div class="ratio ratio-4x3 bg-secondary d-flex align-items-center justify-content-center text-white">
+                Нет фото
+              </div>
+            <% } %>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title mb-2">
+                <a href="/products/<%= p.id %>" class="stretched-link text-decoration-none text-dark">
+                  <%= p.name %>
+                </a>
+              </h5>
+              <p class="card-text text-muted small mb-2"><%= p.shortDesc %></p>
+              <div class="mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-bold text-success"><%= p.price %> ₽</span>
+                  <% if (p.stock > 0) { %>
+                    <span class="badge bg-success">В наличии</span>
+                  <% } else { %>
+                    <span class="badge bg-danger">Нет в наличии</span>
+                  <% } %>
+                </div>
+                <a href="/products/<%= p.id %>" class="btn btn-outline-primary w-100">
+                  Подробнее
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Фильтрация подкатегорий при смене категории
+  document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('categorySelect');
+    const subcategorySelect = document.getElementById('subcategorySelect');
+    const allOptions = Array.from(subcategorySelect.querySelectorAll('option[data-category]'));
+
+    function updateSubcategories() {
+      const cat = categorySelect.value;
+      subcategorySelect.innerHTML = '<option value="">Все</option>';
+      allOptions.forEach(o => {
+        if (!cat || o.dataset.category === cat) {
+          subcategorySelect.append(o.cloneNode(true));
+        }
+      });
+    }
+    categorySelect.addEventListener('change', updateSubcategories);
+    updateSubcategories();
+  });
+</script>

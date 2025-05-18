@@ -1,0 +1,61 @@
+<div class="bg-light py-5">
+	<div class="container text-center">
+		<h1 class="display-4 mb-3">Добро пожаловать в наш магазин!</h1>
+		<p class="lead mb-4">
+			Перейдите в <a href="/products" class="link-primary">каталог</a>
+			или воспользуйтесь поиском ниже.
+		</p>
+
+		<!-- Поисковая форма -->
+		<form action="/search" method="get" class="d-flex justify-content-center">
+			<input
+				type="text"
+				name="q"
+				class="form-control form-control-lg me-2"
+				placeholder="Поиск товара по названию..."
+				required
+			/>
+			<button type="submit" class="btn btn-primary btn-lg">Поиск</button>
+		</form>
+	</div>
+</div>
+
+<div class="container my-5">
+	<div class="row g-4">
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm">
+				<div class="card-body text-center">
+					<h5 class="card-title">Новинки</h5>
+					<p class="card-text">Самые свежие поступления в нашем каталоге.</p>
+					<a href="/products?sort=new" class="btn btn-outline-primary">
+						Смотреть
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm">
+				<div class="card-body text-center">
+					<h5 class="card-title">Популярные товары</h5>
+					<p class="card-text">
+						Товары с наивысшими оценками наших покупателей.
+					</p>
+					<a href="/products?sort=rating_desc" class="btn btn-outline-primary">
+						Смотреть
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm">
+				<div class="card-body text-center">
+					<h5 class="card-title">Скидки</h5>
+					<p class="card-text">Горячие предложения и специальные цены.</p>
+					<a href="/products?filter=discount" class="btn btn-outline-primary">
+						Смотреть
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

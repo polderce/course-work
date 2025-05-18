@@ -1,0 +1,164 @@
+<div class="card shadow-sm mb-4">
+	<div class="card-header bg-white">
+		<ul class="nav nav-tabs card-header-tabs">
+			<li class="nav-item">
+				<a
+					class="nav-link <%= activeTab === 'products' ? 'active' : 'text-secondary' %>"
+					href="/admin/products"
+				>
+					<i class="bi bi-box-seam me-1"></i>Товары
+				</a>
+			</li>
+			<li class="nav-item">
+				<a
+					class="nav-link <%= activeTab === 'orders' ? 'active' : 'text-secondary' %>"
+					href="/admin/orders"
+				>
+					<i class="bi bi-receipt me-1"></i>Заказы
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">
+      <%= product.id ? 'Редактирование товара' : 'Добавление товара' %>
+    </h4>
+    <a href="/admin/products" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i>Назад к списку
+    </a>
+  </div>
+  <div class="card-body">
+    <form
+      action="<%= product.id
+        ? '/admin/products/' + product.id + '/edit'
+        : '/admin/products' %>"
+      method="post"
+      enctype="multipart/form-data"
+      novalidate
+    >
+      <div class="row g-4">
+        <!-- Левая колонка: базовые данные -->
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Название</label>
+            <input
+              type="text"
+              name="name"
+              class="form-control"
+              value="<%= product.name || '' %>"
+              required
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Цена (₽)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              class="form-control"
+              value="<%= product.price || '' %>"
+              required
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Наличие на складе</label>
+            <input
+              type="number"
+              name="stock"
+              class="form-control"
+              value="<%= product.stock != null ? product.stock : 0 %>"
+              required
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Подкатегория</label>
+            <select name="subcategoryId" class="form-select" required>
+              <% subcategories.forEach(s => { %>
+                <option
+                  value="<%= s.id %>"
+                  <%= product.subcategoryId === s.id ? 'selected' : '' %>
+                ><%= s.name %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+
+        <!-- Правая колонка: описания и фото -->
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Краткое описание</label>
+            <input
+              type="text"
+              name="shortDesc"
+              class="form-control"
+              value="<%= product.shortDesc || '' %>"
+              required
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Полное описание</label>
+            <textarea
+              name="fullDesc"
+              class="form-control"
+              rows="5"
+              required
+            ><%= product.fullDesc || '' %></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Фото товара</label>
+            <input
+              type="file"
+              name="image"
+              class="form-control"
+              accept="image/*"
+            >
+            <% if (product.image) { %>
+              <div class="mt-2">
+                <img
+                  src="<%= product.image.startsWith('http')
+                          ? product.image
+                          : '/uploads/' + product.image %>"
+                  alt="Фото <%= product.name %>"
+                  class="img-thumbnail"
+                  style="max-width: 180px; object-fit: cover;"
+                >
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Характеристики -->
+      <div class="mt-4">
+        <h5>Характеристики</h5>
+        <div class="row g-3">
+          <% characteristics.forEach(c => { %>
+            <div class="col-md-4">
+              <label class="form-label"><%= c.name %></label>
+              <input
+                type="text"
+                name="characteristics[<%= c.id %>]"
+                class="form-control"
+                value="<%= 
+                  product.ProductCharacteristics
+                    ?.find(pc=>pc.characteristicId===c.id)
+                    ?.value || '' 
+                %>"
+              >
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-primary px-4">
+          <i class="bi bi-save me-1"></i>
+          <%= product.id ? 'Сохранить' : 'Добавить' %>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<%#
+  Файл: src/views/cart/view.ejs
+  Назначение:
+    Отображение корзины: список товаров, управление количеством,
+    ввод промокода и оформление заказа.
+%>
+
+<div class="row">
+	<div class="col-12">
+		<h2 class="mb-4">Корзина</h2>
+	</div>
+</div>
+
+<% if (items.length) { %>
+<div class="row">
+	<div class="col-lg-8">
+		<div class="table-responsive shadow-sm rounded">
+			<table class="table align-middle mb-0 bg-white">
+				<thead class="table-light">
+					<tr>
+						<th>Товар</th>
+						<th>Цена</th>
+						<th>Кол-во</th>
+						<th>Сумма</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<% let total = 0; %> <% items.forEach(i => { const price =
+					parseFloat(i.Product.price); const line = i.quantity * price; total +=
+					line; %>
+					<tr>
+						<td class="py-3">
+							<div class="d-flex align-items-center">
+								<% if (i.Product.image) { %>
+								<img
+									src="/uploads/<%= i.Product.image %>"
+									alt=""
+									width="60"
+									class="me-3 rounded"
+								/>
+								<% } %>
+								<span><%= i.Product.name %></span>
+							</div>
+						</td>
+						<td class="py-3"><%= price.toFixed(2) %> ₽</td>
+						<td class="py-3">
+							<div class="input-group input-group-sm" style="width: 120px">
+								<form action="/cart/update" method="post" class="d-flex">
+									<input type="hidden" name="itemId" value="<%= i.id %>" />
+									<input
+										type="hidden"
+										name="qty"
+										value="<%= i.quantity - 1 %>"
+									/>
+									<button type="submit" class="btn btn-outline-secondary">
+										–
+									</button>
+								</form>
+								<input
+									type="text"
+									class="form-control text-center"
+									value="<%= i.quantity %>"
+									readonly
+								/>
+								<form action="/cart/update" method="post" class="d-flex">
+									<input type="hidden" name="itemId" value="<%= i.id %>" />
+									<input
+										type="hidden"
+										name="qty"
+										value="<%= i.quantity + 1 %>"
+									/>
+									<button type="submit" class="btn btn-outline-secondary">
+										+
+									</button>
+								</form>
+							</div>
+						</td>
+						<td class="py-3"><%= line.toFixed(2) %> ₽</td>
+						<td class="py-3 text-center">
+							<form action="/cart/remove" method="post">
+								<input type="hidden" name="itemId" value="<%= i.id %>" />
+								<button
+									type="submit"
+									class="btn btn-sm btn-danger"
+									title="Удалить"
+								>
+									<i class="bi bi-trash"></i>
+								</button>
+							</form>
+						</td>
+					</tr>
+					<% }) %>
+				</tbody>
+				<tfoot class="table-light">
+					<tr>
+						<td colspan="3" class="text-end"><strong>Итого:</strong></td>
+						<td><strong><%= total.toFixed(2) %> ₽</strong></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+
+	<div class="col-lg-4 mt-4 mt-lg-0">
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h5 class="card-title">Итоговая сумма</h5>
+				<p class="display-6"><strong><%= total.toFixed(2) %> ₽</strong></p>
+				<form action="/orders/create" method="post">
+					<div class="mb-3">
+						<label for="promo" class="form-label">Промокод</label>
+						<input
+							type="text"
+							id="promo"
+							name="promo"
+							class="form-control"
+							placeholder="Введите промокод"
+						/>
+					</div>
+					<button type="submit" class="btn btn-success w-100">
+						Оформить заказ
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<% } else { %>
+<div class="alert alert-info text-center">Ваша корзина пуста.</div>
+<% } %>

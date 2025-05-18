@@ -1,0 +1,59 @@
+<%#
+  Файл: src/views/products/search.ejs
+  Назначение:
+    Отображение результатов поиска в виде карточек товаров.
+%>
+
+<div class="py-4">
+	<div class="container">
+		<h2 class="mb-4">Результаты поиска «<%= query %>»</h2>
+		<% if (products.length) { %>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+			<% products.forEach(p => { %>
+			<div class="col">
+				<div class="card h-100 shadow-sm border-0">
+					<% if (p.image) { %>
+					<div class="ratio ratio-4x3 overflow-hidden">
+						<img
+							src="/uploads/<%= p.image %>"
+							class="card-img-top object-fit-cover"
+							alt="<%= p.name %>"
+						/>
+					</div>
+					<% } else { %>
+					<div
+						class="ratio ratio-4x3 bg-secondary d-flex align-items-center justify-content-center text-white"
+					>
+						Нет фото
+					</div>
+					<% } %>
+					<div class="card-body d-flex flex-column">
+						<h5 class="card-title mb-2">
+							<a
+								href="/products/<%= p.id %>"
+								class="stretched-link text-decoration-none text-dark"
+							>
+								<%= p.name %>
+							</a>
+						</h5>
+						<p class="card-text text-muted small mb-3"><%= p.shortDesc %></p>
+						<div
+							class="mt-auto d-flex justify-content-between align-items-center"
+						>
+							<span class="fw-bold text-success"><%= p.price %> ₽</span>
+							<% if (p.stock > 0) { %>
+							<span class="badge bg-success">В наличии</span>
+							<% } else { %>
+							<span class="badge bg-danger">Нет</span>
+							<% } %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<% }) %>
+		</div>
+		<% } else { %>
+		<div class="alert alert-info text-center">Товары не найдены.</div>
+		<% } %>
+	</div>
+</div>
